@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SAE.Views.Inventory.ItemDetailView"
+             Title="Detalle Producto">
+    <ScrollView HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand">
+        <StackLayout
+            HorizontalOptions="FillAndExpand"
+            Padding="5"
+            VerticalOptions="FillAndExpand"
+            x:Name="stkMain">
+            <ActivityIndicator MaximumHeightRequest="20" x:Name="busyIndicator"/>
+            <Grid
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                </Grid.RowDefinitions>
+                <Label
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Grid.Row="0"
+                    Text="Nombre producto"
+                    VerticalOptions="Center"/>
+                <Entry
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Grid.Row="1"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand"
+                    x:Name="entName"/>
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="2"
+                    Text="Codigo de barras"
+                    VerticalOptions="Center"/>
+                <Entry
+                    Grid.Column="1"
+                    Grid.Row="2"
+                    HorizontalOptions="Fill"
+                    x:Name="entBarCode"/>
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="3"
+                    Text="Codigo de proveedor"
+                    VerticalOptions="Center"/>
+                <Entry
+                    Grid.Column="1"
+                    Grid.Row="3"
+                    HorizontalOptions="Fill"
+                    x:Name="entSellerCode"/>
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="4"
+                    Text="Disponibles"
+                    VerticalOptions="Center"/>
+                <Entry
+                    Grid.Column="1"
+                    Grid.Row="4"
+                    HorizontalOptions="Fill"
+                    x:Name="entQuantity"
+                    Keyboard="Numeric"/>
+
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="5"
+                    Text="Precio vendedor"
+                    VerticalOptions="Center"/>
+                <Entry
+                    Grid.Column="1"
+                    Grid.Row="5"
+                    HorizontalOptions="Fill"
+                    Keyboard="Numeric"
+                    VerticalOptions="Center" 
+                    x:Name="entSellerPrice"
+                    PropertyChanged="entSellerPrice_PropertyChanged"/>
+                <Label
+                      Grid.Column="0"
+                      Grid.Row="6"
+                      Text="% Costos asociados"
+                        VerticalOptions="Center"/>
+                <Entry
+                    Grid.Column="1"
+                    Grid.Row="6"
+                    HorizontalOptions="Fill"
+                    x:Name="entPercentageCosts"
+                    Keyboard="Numeric"
+                    PropertyChanged="entSellerPrice_PropertyChanged"/>
+                <Label
+                  Grid.Column="0"
+                  Grid.Row="7"
+                  Text="Precio costo"
+                    VerticalOptions="Center"/>
+                <Entry
+                    Grid.Column="1"
+                    Grid.Row="7"
+                    HorizontalOptions="Fill"
+                    x:Name="entPriceCost"
+                    Keyboard="Numeric"/>
+                <Label
+                   Grid.Column="0"
+                   Grid.Row="8"
+                   Text="% Ganancia"
+                    VerticalOptions="Center"/>
+                <Entry
+                   Grid.Column="1"
+                   Grid.Row="8"
+                   HorizontalOptions="Fill"
+                   x:Name="entProfitPercentage"
+                    Keyboard="Numeric"
+                    PropertyChanged="entSellerPrice_PropertyChanged"/>
+                <Label
+                   Grid.Column="0"
+                   Grid.Row="9"
+                   Text="Monto ganancia"
+                    VerticalOptions="Center"/>
+                <Entry
+                   Grid.Column="1"
+                   Grid.Row="9"
+                   HorizontalOptions="Fill"
+                   x:Name="entProfitAmount"
+                    Keyboard="Numeric"/>
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="10"
+                    Text="Total calculado"
+                    VerticalOptions="Center"/>
+                <Entry
+                    Grid.Column="1"
+                    Grid.Row="10"
+                    HorizontalOptions="Fill"
+                    x:Name="entTotalPriceCalculated"
+                    Keyboard="Numeric"/>
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="11"
+                    Text="Total"
+                    VerticalOptions="Center"/>
+                <Entry
+                    Grid.Column="1"
+                    Grid.Row="11"
+                    HorizontalOptions="Fill"
+                    x:Name="entFinalPrice"
+                    Keyboard="Numeric"
+                    PropertyChanged="entFinalPrice_PropertyChanged"/>
+                <Button
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Grid.Row="12"
+                    Clicked="btnSave_Clicked"
+                    FontAttributes="Bold"
+                    FontSize="Small"
+                    Text="Guardar" 
+                    x:Name="btnSave"/>
+            </Grid>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

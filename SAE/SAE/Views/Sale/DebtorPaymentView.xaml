@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SAE.Views.Sale.DebtorPaymentView"
+             Title="Pago de deudor">
+    <VerticalStackLayout>
+        <StackLayout>
+            <Label
+                Text="Pago de deudor"
+                FontAttributes="Bold"
+                FontSize="Large"
+                HorizontalOptions="CenterAndExpand"
+                Margin="0,20"
+                VerticalOptions="CenterAndExpand"/>
+        </StackLayout>
+        <Grid Padding="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <!--Row 0-->
+            
+            <!--Row 1-->
+            <Label
+                Grid.Column="0"
+                Grid.Row="1"
+                Text="Monto"
+                VerticalOptions="Center"/>
+            <Entry
+                Grid.Column="1"
+                Grid.Row="1"
+                Keyboard="Numeric"
+                Placeholder="Cantidad"
+                x:Name="entPaymentAmount"/>
+            <!--Row 2-->
+            <Label
+                Grid.Column="0"
+                Grid.Row="2"
+                Text="Fecha"
+                VerticalOptions="Center"/>
+            <DatePicker
+                Grid.Column="1"
+                Grid.Row="2"
+                Date="{Binding Date}"
+                FontAttributes="Bold"
+                Format="dd/MM/yyyy"
+                IsEnabled="False"
+                x:Name="dpkDate"/>
+            <!--Row 3-->
+            <Label
+                Grid.Column="0"
+                Grid.Row="3"
+                Text="Método de pago"
+                VerticalOptions="Center"/>
+            <Entry
+                Grid.Column="1"
+                Grid.Row="3"
+                Placeholder="Método de pago"
+                x:Name="entPaymentMethod"/>
+            <!--Row 4-->
+            <Label
+                Grid.Column="0"
+                Grid.Row="4"
+                Text="Observación"
+                VerticalOptions="Center"/>
+            <Entry
+                Grid.Column="1"
+                Grid.Row="4"
+                Placeholder="Observación"
+                x:Name="entObservation"/>
+            <!--Row 5-->
+            <Button
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Grid.Row="5"
+                Clicked="btnSave_Clicked"
+                FontAttributes="Bold"
+                FontSize="Medium"
+                HorizontalOptions="Fill" 
+                Text="Guardar" 
+                x:Name="btnSave"/>
+        </Grid>
+    </VerticalStackLayout>
+</ContentPage>

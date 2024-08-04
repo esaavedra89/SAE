@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SAE.Views.Sale.SearchClientView"
+             Title="SearchClientView"
+             BackgroundColor="White">
+    <StackLayout>
+        <Label 
+            Text="Buscar Cliente"
+            FontAttributes="Bold"
+            FontSize="Large"
+            TextColor="Black"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"/>
+        <StackLayout
+            Orientation="Horizontal">
+            <Grid Padding="10"
+                  HorizontalOptions="FillAndExpand">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Entry
+                    Grid.Column="0"
+                    Placeholder="Ingrese el nombre del cliente"
+                    HorizontalOptions="CenterAndExpand"
+                    TextColor="Black"
+                    VerticalOptions="CenterAndExpand"
+                    x:Name="entName"/>
+                <ImageButton
+                    Grid.Column="1"
+                    Source="ic_search"
+                    Clicked="btnSearch_Clicked"
+                    x:Name="btnSearch"/>
+                <ImageButton
+                    Grid.Column="2"
+                    Source="ic_add_circle"
+                    Clicked="btnAdd_Clicked"
+                    x:Name="btnAdd"/>
+            </Grid>
+            
+        </StackLayout>
+        <ListView 
+            HorizontalOptions="FillAndExpand"
+            ItemSelected="lvCustomers_ItemSelected"
+            Margin="10,0"
+            x:Name="lvCustomers">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid Padding="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0"
+                                Text="{Binding FullName}"
+                                TextColor="Black"
+                                FontAttributes="Bold" 
+                                   HorizontalOptions="Start"/>
+                            <Label Grid.Column="1"
+                                Text="{Binding Nickname}"
+                                TextColor="Black"
+                                FontAttributes="Bold" 
+                                HorizontalOptions="Start"/>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+</ContentPage>

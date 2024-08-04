@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SAE.Views.Sale.CustomerDetailView"
+             Title="Cliente Detalle">
+    <ScrollView HorizontalOptions="FillAndExpand"
+            VerticalOptions="FillAndExpand">
+        <StackLayout
+        HorizontalOptions="FillAndExpand"
+        Padding="5"
+        VerticalOptions="FillAndExpand">
+            <Grid
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="FillAndExpand">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="AUTO"/>
+                </Grid.RowDefinitions>
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Text="Nombre"
+                    VerticalOptions="Center"/>
+                <Entry
+                    Grid.Column="1"
+                    Grid.Row="0"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand"
+                    x:Name="entName"/>
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="1"
+                    Text="Apellido"
+                    VerticalOptions="Center"/>
+                <Entry
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    HorizontalOptions="Fill"
+                    x:Name="entLastname"/>
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="2"
+                    Text="Apodo"
+                    VerticalOptions="Center"/>
+                <Entry
+                    Grid.Column="1"
+                    Grid.Row="2"
+                    HorizontalOptions="Fill"
+                    x:Name="entNickname"/>
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="3"
+                    Text="Identificación"
+                    VerticalOptions="Center"/>
+                <Entry
+                    Grid.Column="1"
+                    Grid.Row="3"
+                    HorizontalOptions="Fill"
+                    x:Name="entIdentity"/>
+
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="4"
+                    Text="Teléfono"
+                    VerticalOptions="Center"/>
+                <Entry
+                    Grid.Column="1"
+                    Grid.Row="4"
+                    HorizontalOptions="Fill"
+                    Keyboard="Telephone"
+                    VerticalOptions="Center" 
+                    x:Name="entPhoneNumber"/>
+                <Button
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Grid.Row="5"
+                    Clicked="btnSave_Clicked"
+                    FontAttributes="Bold"
+                    FontSize="Small"
+                    Text="Guardar" 
+                    x:Name="btnSave"/>
+            </Grid>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

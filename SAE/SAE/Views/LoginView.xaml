@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SAE.Views.LoginView"
+             Title="LoginView">
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30,0"
+            Spacing="25">
+            <Image
+                Source="dotnet_bot.png"
+                HeightRequest="185"
+                Aspect="AspectFit"
+                SemanticProperties.Description="App logo" />
+            <Label
+                Text="SAE"
+                Style="{StaticResource Headline}"
+                SemanticProperties.HeadingLevel="Level1" />
+            <Entry
+                HorizontalOptions="Fill"
+                Placeholder="Usuario"
+                Style="{StaticResource SubHeadline}"
+                SemanticProperties.HeadingLevel="Level2"
+                
+                x:Name="entUser"/>
+            <Entry
+                HorizontalOptions="Fill"
+                IsPassword="True"
+                Placeholder="Contraseña"
+                Style="{StaticResource SubHeadline}"
+                SemanticProperties.HeadingLevel="Level3"
+                
+                x:Name="entPass"/>  
+            <Button
+                Clicked="btnLogin_Clicked"
+                FontAttributes="Bold"
+                FontSize="Medium"
+                HorizontalOptions="Fill" 
+                Text="Ingresar" 
+                x:Name="btnLogin"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

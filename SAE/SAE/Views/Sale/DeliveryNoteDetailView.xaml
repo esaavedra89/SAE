@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SAE.Views.Sale.DeliveryNoteDetailView"
+             Title="Nota de entrega - Detalle">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Save" IconImageSource="ic_save" Clicked="btnSave_Clicked" x:Name="btnSave"/>
+    </ContentPage.ToolbarItems>
+    <ScrollView HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand">
+        <StackLayout
+            HorizontalOptions="FillAndExpand"
+            Padding="5"
+            VerticalOptions="FillAndExpand"
+            x:Name="stkMain">   
+            <ActivityIndicator MaximumHeightRequest="20" x:Name="busyIndicator"/>
+            <Grid Padding="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <!--Row 0-->
+                <DatePicker
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Date="{Binding Date}"
+                    Format="dd/MM/yyyy"
+                    FontAttributes="Bold"
+                    IsEnabled="False"
+                    x:Name="dpkDate"/>
+                <HorizontalStackLayout
+                    Grid.Column="1"
+                    Grid.Row="0"
+                    HorizontalOptions="EndAndExpand">
+                    <Label
+                        Text="Nota #: "/>
+                    <Label
+                        FontAttributes="Bold"
+                    
+                        TextColor="Black"
+                        x:Name="lblNumber"/>
+                </HorizontalStackLayout>
+                <!--Row 1-->
+                <StackLayout
+                    Orientation="Horizontal"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Grid.Row="1">
+                    <ImageButton
+                        Source="ic_search"
+                        Clicked="btnSearch_Clicked"
+                        WidthRequest="40"
+                        x:Name="btnSearch"/>
+                    <Entry
+                        Text="{Binding CustomerName}"
+                        Placeholder="Nombre del cliente"
+                        HorizontalOptions="FillAndExpand"
+                        x:Name="entCustomerName"/>  
+                </StackLayout>
+                <!--Row 2-->
+                <Entry
+                    Grid.Column="0"
+                    Grid.Row="2"
+                    Placeholder="Identificación"
+                    x:Name="entCustomerIdentification"/>
+                <Entry
+                    Grid.Column="1"
+                    Grid.Row="2"
+                    Placeholder="Método de pago"
+                    x:Name="entPaymentMethod"/>
+                <!--Row 3-->
+                <StackLayout 
+                    Orientation="Horizontal"
+                    Grid.Column="0"
+                    Grid.Row="3">
+                    <Label
+                        Text="Descuento %: "
+                        HorizontalOptions="Start"
+                        VerticalOptions="CenterAndExpand"/>
+                    <Entry
+                        IsEnabled="True"
+                        Keyboard="Numeric"
+                        Placeholder="Descuento %"
+                        PropertyChanged="entDiscountPercentage_PropertyChanged"
+                        HorizontalOptions="CenterAndExpand"
+                        VerticalOptions="CenterAndExpand"
+                        x:Name="entDiscountPercentage"/>
+                </StackLayout>
+
+                <StackLayout
+                    Orientation="Horizontal"
+                    Grid.Column="1"
+                    Grid.Row="3">
+                    <Label
+                         Text="Descuento: "
+                         HorizontalOptions="Start"
+                         VerticalOptions="CenterAndExpand"/>
+                    <Entry
+                         IsEnabled="False"
+                        Placeholder="Descuento"
+                         HorizontalOptions="CenterAndExpand"
+                         VerticalOptions="CenterAndExpand"
+                         x:Name="entDiscount"/>
+                </StackLayout>
+                <!--Row 4-->
+                <StackLayout
+                    Orientation="Horizontal"
+                    Grid.Column="0"
+                    Grid.Row="4">
+                    <Label
+                      Text="Subtotal: "
+                      HorizontalOptions="Start"
+                      VerticalOptions="CenterAndExpand"/>
+                    <Entry
+                        Keyboard="Numeric"
+                        IsEnabled="False"
+                        Placeholder="Subtotal"
+                        HorizontalOptions="EndAndExpand"
+                        VerticalOptions="CenterAndExpand"
+                        x:Name="entSubtotal"/>
+                </StackLayout>
+                <StackLayout
+                    Orientation="Horizontal"
+                    Grid.Column="1"
+                    Grid.Row="4">
+                    <Label
+                      Text="Total: "
+                      HorizontalOptions="Start"
+                      VerticalOptions="CenterAndExpand"/>
+                    <Entry
+                        IsEnabled="False"
+                        Placeholder="Total"
+                        HorizontalOptions="EndAndExpand"
+                        VerticalOptions="CenterAndExpand"
+                        x:Name="entTotal"/>
+                </StackLayout>
+
+                <!--Row 5-->
+                <StackLayout 
+                    Orientation="Horizontal"
+                    Grid.Column="0"
+                    Grid.Row="5">
+                    <Label
+                        Text="Entregado:"
+                        HorizontalOptions="StartAndExpand"
+                        VerticalOptions="CenterAndExpand"
+                         x:Name="lblDeliver"/>
+                    <Switch
+                        HorizontalOptions="EndAndExpand"
+                        VerticalOptions="CenterAndExpand"
+                        x:Name="swtDeliver"/>
+                </StackLayout>
+            </Grid>
+            <StackLayout
+                Margin="5,0">
+                <Grid Padding="0"
+                      BackgroundColor="#512BD4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.5*" />
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ImageButton 
+                        Grid.Column="0"
+                        Clicked="btnAdd_Clicked" 
+                        Source="ic_add_circle"
+                        x:Name="btnAdd"/>
+                    <Label Grid.Column="1"
+                        Text="Producto"
+                        TextColor="White"
+                        FontAttributes="Bold" />
+                    <Label Grid.Column="2"
+                        Text="Precio"
+                        TextColor="White"
+                        FontAttributes="Bold" />
+                    <Label Grid.Column="3"
+                        Text="Total"
+                        TextColor="White"
+                        FontAttributes="Bold" />
+                </Grid>
+            </StackLayout>
+            <ListView 
+                HorizontalOptions="FillAndExpand"
+                ItemSelected="lvItems_ItemSelected"
+                x:Name="lvItems"
+                Margin="5,0">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid Padding="0"
+                                BackgroundColor="#512BD4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="0.5*" />
+                                    <ColumnDefinition Width="0.7*" />
+                                    <ColumnDefinition Width="0.7*" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0"
+                                    LineBreakMode="TailTruncation"
+                                    Text="{Binding Item.Name}"
+                                    TextColor="White"
+                                    FontAttributes="Bold" />
+                                <Label Grid.Column="1"
+                                   Text="{Binding ItemQuantity}"
+                                   TextColor="White"
+                                   FontAttributes="Bold" 
+                                       HorizontalOptions="End"/>
+
+                                <Label Grid.Column="2"
+                                    Text="{Binding PriceItem, StringFormat='{0:N2}'}"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                       HorizontalOptions="End"/>
+                                <Label Grid.Column="3"
+                                    Text="{Binding TotalItem, StringFormat='{0:N2}'}"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                       HorizontalOptions="End">
+                                </Label>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

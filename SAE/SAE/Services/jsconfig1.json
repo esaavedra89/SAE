@@ -1,0 +1,29 @@
+{
+  "CustomerName": "Eleazar Saavedra 02",
+  "CustomerIdentification": "20000662",
+  "Number": 0,
+  "Date": "2024-03-06T00:00:00",
+  "TotalDebt": 20.0000,
+  "Debt": 15.0000,
+  "Summation": 5.0,
+  "Observation": "2",
+  "RelatedDeliveryNote": "#25",
+  "Payments": [
+    {
+      "PaymentAmount": 5.0,
+      "PaymentMethod": "Bs",
+      "Date": "2024-03-06T00:00:00-06:00",
+      "Observation": "No paga",
+      "Id": 0,
+      "CreatedDate": "2024-03-06T16:44:52.2408307-06:00",
+      "CreatedBy": "eleazar",
+      "UpdateddDate": null,
+      "UpdateddBy": null
+    }
+  ],
+  "Id": 1,
+  "CreatedDate": "2024-03-06T18:33:24.5809213",
+  "CreatedBy": "eleazar",
+  "UpdateddDate": "2024-03-06T18:46:30.632001",
+  "UpdateddBy": "eleazar"
+}

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SAE.Views.Sale.CustomerView"
+             x:Name="lblTitle">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Save" IconImageSource="ic_add_circle" Clicked="btnAgregar_Clicked" x:Name="btnAgregar"/>
+    </ContentPage.ToolbarItems>
+    <StackLayout>
+        <StackLayout>
+            <Grid 
+            BackgroundColor="#512BD4"
+            Padding="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.3*" />
+                    <ColumnDefinition Width="1.5*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="0.8*" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0"
+               Text="#"
+               TextColor="White"
+               FontAttributes="Bold" 
+           HorizontalOptions="Center"/>
+                <Label Grid.Column="1"
+                    Text="Nombre"
+                    TextColor="White"
+                    FontAttributes="Bold" 
+                    HorizontalOptions="Start"/>
+                <Label Grid.Column="2"
+                    Text="Apodo"
+                    TextColor="White"
+                    FontAttributes="Bold" 
+                    HorizontalOptions="Center"/>
+                <Label Grid.Column="3"
+                    Text="Teléfono"
+                    TextColor="White"
+                    FontAttributes="Bold" 
+                    HorizontalOptions="Center"/>
+            </Grid>
+        </StackLayout>
+        <ListView 
+            HorizontalOptions="FillAndExpand"
+            ItemSelected="lvCustomer_ItemSelected"
+            x:Name="lvCustomers">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid Padding="0"
+                              BackgroundColor="#512BD4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.3*" />
+                                <ColumnDefinition Width="1.5*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="0.8*" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0"
+                               Text="{Binding Id}"
+                               TextColor="White"
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center"/>
+                            <Label Grid.Column="1"
+                                Text="{Binding FullName}"
+                                TextColor="White"
+                                FontAttributes="Bold" />
+                            <Label Grid.Column="2"
+                                Text="{Binding Nickname}"
+                                TextColor="White"
+                                FontAttributes="Bold" 
+                                HorizontalOptions="Center"/>
+                            <Label Grid.Column="3"
+                                Text="{Binding PhoneNumber}"
+                                TextColor="White"
+                                FontAttributes="Bold" 
+                                HorizontalOptions="Center"/>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+</ContentPage>

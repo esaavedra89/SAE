@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SAE.Views.Sale.DeliveryNoteItemDetailView"
+             Title="Detalle de producto">
+    <VerticalStackLayout>
+        <Grid Padding="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <!--Row 0-->
+            <Picker
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Grid.Row="0"
+                Title="Seleciona el producto"
+                ItemDisplayBinding="{Binding Name}"
+                PropertyChanged="pkrItem_PropertyChanged"
+                x:Name="pkrItem"/>
+            <!--Row 1-->
+            <Label
+                Grid.Column="0"
+                Grid.Row="1"
+                Text="Cantidad"/>
+            <Entry
+                Grid.Column="1"
+                Grid.Row="1"
+                Keyboard="Numeric"
+                Placeholder="Cantidad"
+                PropertyChanged="entItemQuantity_PropertyChanged"
+                x:Name="entItemQuantity"/>
+            <!--Row 2-->
+            <Label
+                Grid.Column="0"
+                Grid.Row="2"
+                Text="Precio unitario"/>
+            <Entry
+                Grid.Column="1"
+                Grid.Row="2"
+                IsEnabled="False"
+                Placeholder="Precio unitario"
+                x:Name="entPriceItem"/>
+            <!--Row 3-->
+            <Label
+                Grid.Column="0"
+                Grid.Row="3"
+                Text="Precio total"/>
+            <Entry
+                Grid.Column="1"
+                Grid.Row="3"
+                IsEnabled="False"
+                Placeholder="Total producto"
+                x:Name="entTotalItem"/>
+            <!--Row 4-->
+            <Button
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Grid.Row="4"
+                Clicked="btnSave_Clicked"
+                FontAttributes="Bold"
+                FontSize="Medium"
+                HorizontalOptions="Fill" 
+                Text="Guardar" 
+                x:Name="btnSave"/>
+        </Grid>
+    </VerticalStackLayout>
+</ContentPage>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SAE.Views.Sale.DebtorsDetailView"
+             Title="Deudores - Detalle">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Save" IconImageSource="ic_save" Clicked="btnSave_Clicked" x:Name="btnSave"/>
+    </ContentPage.ToolbarItems>
+    <ScrollView HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand">
+            <StackLayout
+                HorizontalOptions="FillAndExpand"
+                Padding="5"
+                VerticalOptions="FillAndExpand"
+                x:Name="stkMain">
+            <ActivityIndicator MaximumHeightRequest="20" x:Name="busyIndicator"/>
+            <Grid Padding="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <!--Row 0-->
+                    <DatePicker
+                        Grid.Column="0"
+                        Grid.Row="0"
+                        Date="{Binding Date}"
+                        Format="dd/MM/yyyy"
+                        FontAttributes="Bold"
+                        IsEnabled="False"
+                        x:Name="dpkDate"/>
+                    <HorizontalStackLayout
+                    Grid.Column="1"
+                    Grid.Row="0"
+                    HorizontalOptions="EndAndExpand">
+                        <Label
+                        Text="#: "/>
+                        <Label
+                        FontAttributes="Bold"
+                        TextColor="Black"
+                        x:Name="lblNumber"/>
+                    </HorizontalStackLayout>
+                    <!--Row 1-->
+                <StackLayout
+                    Orientation="Horizontal"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Grid.Row="1">
+                    <ImageButton
+                        Source="ic_search"
+                        Clicked="btnSearch_Clicked"
+                        WidthRequest="40"
+                        x:Name="btnSearch"/>
+                    <Entry
+                      Text="{Binding CustomerName}"
+                      Placeholder="Nombre del cliente"
+                      HorizontalOptions="FillAndExpand"
+                      x:Name="entCustomerName"/>
+                </StackLayout>
+                    <!--Row 2-->
+                    <Entry
+                    Grid.Column="0"
+                    Grid.Row="2"
+                    Placeholder="Identificación"
+                    x:Name="entCustomerIdentification"/>
+                    <Entry
+                        Grid.Column="1"
+                        Grid.Row="2"
+                        Placeholder="Notas relacionadas"
+                        x:Name="entRelativedNotes"/>
+                    <!--Row 3-->
+                    <StackLayout
+                        Grid.Column="0"
+                        Grid.Row="3"
+                        Orientation="Horizontal">
+                        <Label
+                             Text="Sumatoria: "
+                             HorizontalOptions="Start" VerticalOptions="Center"/>
+                        <Entry
+                            Placeholder="Sumatoria"
+                            IsEnabled="False"
+                            Keyboard="Numeric"
+                            x:Name="entSummation"/>
+                    </StackLayout>
+                    <StackLayout
+                        Grid.Column="1"
+                        Grid.Row="3"
+                        Orientation="Horizontal">
+                        <Label
+                             Text="Deuda actual: "
+                             HorizontalOptions="Start" VerticalOptions="Center"/>
+                        <Entry
+                             IsEnabled="False"
+                             Placeholder="Deuda actual"
+                             x:Name="entActualDebt"/>
+                    </StackLayout>
+
+                    <!--Row 4-->
+                    <StackLayout
+                        Grid.Column="0"
+                        Grid.Row="4"
+                        Orientation="Horizontal">
+                        <Label
+                            Text="Deuda total: "
+                            HorizontalOptions="Start" VerticalOptions="Center"/>
+                        <Entry
+                          Placeholder="Deuda total"
+                          IsEnabled="True"
+                          Keyboard="Numeric"
+                          PropertyChanged="entTotalDebt_PropertyChanged"
+                          HorizontalOptions="Start" VerticalOptions="Center"
+                          x:Name="entTotalDebt"/>
+                    </StackLayout>
+
+
+                    <!--Row 5-->
+                    <Entry
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Grid.Row="5"
+                        Placeholder="Observaciones"
+                        x:Name="entObservations"/>
+                </Grid>
+                <StackLayout>
+                    <Grid Padding="0"
+                          BackgroundColor="#512BD4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.3*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <ImageButton 
+                            Grid.Column="0"
+                            Clicked="btnAdd_Clicked" 
+                            Source="ic_add_circle"
+                            x:Name="btnAdd"
+                            BackgroundColor="White"/>
+                        <Label Grid.Column="1"
+                            Text="Fecha"
+                            TextColor="White"
+                            FontAttributes="Bold" 
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"/>
+                        <Label Grid.Column="2"
+                            Text="Método"
+                            TextColor="White"
+                            FontAttributes="Bold" 
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"/>
+                        <Label Grid.Column="3"
+                            Text="Monto"
+                            TextColor="White"
+                            FontAttributes="Bold" 
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"/>
+                    </Grid>
+                </StackLayout>
+                <ListView 
+                    HorizontalOptions="FillAndExpand"
+                    ItemSelected="lvDebtorPayments_ItemSelected"
+                    x:Name="lvDebtorPayments">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Grid Padding="0"
+                                BackgroundColor="#512BD4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.3*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label 
+                                       Grid.Column="1"
+                                       Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}"
+                                       TextColor="White"
+                                       FontAttributes="Bold" 
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                        />
+                                    <Label Grid.Column="2"
+                                        Text="{Binding PaymentMethod}"
+                                        TextColor="White"
+                                        FontAttributes="Bold"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"/>
+                                    <Label Grid.Column="3"
+                                        Text="{Binding PaymentAmount, StringFormat='{0:N2}'}"
+                                        TextColor="White"
+                                        FontAttributes="Bold"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center">
+                                    </Label>
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+    </ScrollView>
+</ContentPage>
