@@ -11,6 +11,15 @@
         x:Name="stkMain">
         <StackLayout>
             <ActivityIndicator MaximumHeightRequest="20" x:Name="busyIndicator"/>
+            <SearchBar 
+                BackgroundColor="#512BD4"
+                HeightRequest="20" 
+                Placeholder="Buscar" 
+                PlaceholderColor="White"
+                TextColor="White"
+                CancelButtonColor="White"
+                TextChanged="searchBar_TextChanged"
+                x:Name="searchBar"/>    
             <Grid 
                 BackgroundColor="#512BD4"
                 Padding="2">
@@ -20,26 +29,23 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="0.8*" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0"
-                   Text="#"
-                   TextColor="White"
-                   FontAttributes="Bold" 
-               HorizontalOptions="Center"/>
-                <Label Grid.Column="1"
-            Text="Cliente"
-            TextColor="White"
-            FontAttributes="Bold" 
-               HorizontalOptions="Start"/>
+                <Label 
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Text="Cliente"
+                    TextColor="White"
+                    FontAttributes="Bold" 
+                    HorizontalOptions="Center"/>
                 <Label Grid.Column="2"
-            Text="Fecha"
-            TextColor="White"
-            FontAttributes="Bold" 
-               HorizontalOptions="Center"/>
+                    Text="Fecha"
+                    TextColor="White"
+                    FontAttributes="Bold" 
+                    HorizontalOptions="Center"/>
                 <Label Grid.Column="3"
-            Text="Deuda"
-            TextColor="White"
-            FontAttributes="Bold" 
-               HorizontalOptions="Center"/>
+                    Text="Deuda"
+                    TextColor="White"
+                    FontAttributes="Bold" 
+                    HorizontalOptions="Center"/>
             </Grid>
         </StackLayout>
         <ListView 
@@ -50,32 +56,36 @@
                 <DataTemplate>
                     <ViewCell>
                         <Grid Padding="0"
-                    BackgroundColor="#512BD4">
+                    BackgroundColor="#512BD4"
+                              VerticalOptions="FillAndExpand">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="0.3*" />
                                 <ColumnDefinition Width="1.5*" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="0.8*" />
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0"
-                       Text="{Binding Id}"
-                       TextColor="White"
-                       FontAttributes="Bold" 
-                           HorizontalOptions="Center"/>
-                            <Label Grid.Column="1"
-                        Text="{Binding CustomerName}"
-                        TextColor="White"
-                        FontAttributes="Bold" />
+
+                            <Label 
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"   
+                                Text="{Binding CustomerName}"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                Margin="5,0,0,0"
+                                HorizontalOptions="Start"
+                                VerticalTextAlignment="Center"/>
                             <Label Grid.Column="2"
                         Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}"
                         TextColor="White"
                         FontAttributes="Bold" 
-                           HorizontalOptions="Center"/>
+                           HorizontalOptions="Center"
+                                   VerticalTextAlignment="Center"/>
                             <Label Grid.Column="3"
                         Text="{Binding Debt, StringFormat='{0:N2}'}"
                         TextColor="White"
                         FontAttributes="Bold" 
-                           HorizontalOptions="Center"/>
+                           HorizontalOptions="Center"
+                                   VerticalTextAlignment="Center"/>
                         </Grid>
                     </ViewCell>
                 </DataTemplate>

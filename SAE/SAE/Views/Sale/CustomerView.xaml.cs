@@ -7,23 +7,35 @@ namespace SAE.Views.Sale;
 
 public partial class CustomerView : ContentPage
 {
-    MenuItemModel _itemSelected = null;
+
+    #region Variables
+
     APIServices _apiSrvices = new APIServices();
+    List<CustomerModel> listCustomers = new List<CustomerModel>();
+    MenuItemModel _itemSelected = null;
+
+    #endregion
+
+    #region Constructors
 
     public CustomerView(MenuItemModel itemSelected)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
 
         _itemSelected = itemSelected;
         lblTitle.Title = "Clientes";
         LoadScreen();
     }
 
+    #endregion
+
+    #region Methods
+
     public async void LoadScreen()
     {
         try
         {
-            List<CustomerModel> listCustomers = await _apiSrvices.GetCustomers();
+            listCustomers = await _apiSrvices.GetCustomers();
             if (listCustomers.Count > 0)
                 lvCustomers.ItemsSource = listCustomers.OrderBy(m => m.Name);
             else
@@ -47,6 +59,10 @@ public partial class CustomerView : ContentPage
         }
     }
 
+    #endregion
+
+    #region Events
+
     private async void lvCustomer_ItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
         try
@@ -61,4 +77,30 @@ public partial class CustomerView : ContentPage
             await DisplayAlert("Error", exc.Message, "Aceptar");
         }
     }
+
+    private async void searchBar_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        try
+        {
+            SearchBar searchBar = (SearchBar)sender;
+            if (!string.IsNullOrWhiteSpace(searchBar.Text))
+            {
+                List<CustomerModel> list = listCustomers.Where(x => x.FullName.Contains(searchBar.Text, StringComparison.InvariantCultureIgnoreCase)).OrderBy(x => x.Name).ToList();
+
+                lvCustomers.ItemsSource = new List<CustomerModel>();
+                lvCustomers.ItemsSource = list;
+            }
+            else
+            {
+                lvCustomers.ItemsSource = new List<CustomerModel>();
+                lvCustomers.ItemsSource = listCustomers.OrderBy(m => m.Name);
+            }
+        }
+        catch (Exception exc)
+        {
+            await DisplayAlert("Error", exc.Message, "Aceptar");
+        }
+    } 
+
+    #endregion
 }

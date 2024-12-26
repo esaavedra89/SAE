@@ -21,7 +21,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Entry
+                <!--<Entry
                     Grid.Column="0"
                     Placeholder="Ingrese el nombre del cliente"
                     HorizontalOptions="CenterAndExpand"
@@ -32,7 +32,17 @@
                     Grid.Column="1"
                     Source="ic_search"
                     Clicked="btnSearch_Clicked"
-                    x:Name="btnSearch"/>
+                    x:Name="btnSearch"/>-->
+                <SearchBar 
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                     HeightRequest="20" 
+                     Placeholder="Buscar" 
+                     PlaceholderColor="Black"
+                     TextColor="Black"
+                     CancelButtonColor="Black"
+                     TextChanged="searchBar_TextChanged"
+                     x:Name="searchBar"/>
                 <ImageButton
                     Grid.Column="2"
                     Source="ic_add_circle"

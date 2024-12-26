@@ -7,17 +7,28 @@ namespace SAE.Views.Sale;
 
 public partial class DebtorView : ContentPage
 {
-    MenuItemModel _itemSelected = null;
+    #region Variables
+
     APIServices _apiSrvices = new APIServices();
+    List<DebtorModel> listDebtors = new List<DebtorModel>();
+    MenuItemModel _itemSelected = null;
+
+    #endregion
+
+    #region Constructors
 
     public DebtorView(MenuItemModel itemSelected)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
 
         _itemSelected = itemSelected;
         lblTitle.Title = "Deudores";
         LoadScreen();
     }
+
+    #endregion
+
+    #region Methods
 
     public async void LoadScreen()
     {
@@ -25,7 +36,7 @@ public partial class DebtorView : ContentPage
         {
             this.UpdateBusyIndicator(true);
 
-            List<DebtorModel> listDebtors = await _apiSrvices.GetDebtors();
+            listDebtors = await _apiSrvices.GetDebtors();
             if (listDebtors.Count > 0)
                 lvDebtors.ItemsSource = listDebtors.OrderByDescending(m => m.Id);
             else
@@ -58,6 +69,29 @@ public partial class DebtorView : ContentPage
         }
     }
 
+    private void UpdateBusyIndicator(bool value)
+    {
+        busyIndicator.IsRunning = value;
+        busyIndicator.IsVisible = value;
+
+        stkMain.IsEnabled = !value;
+    }
+
+    private void RefreshScreen()
+    {
+        lvDebtors.ItemsSource = new List<DebtorModel>();
+
+        LoadScreen();
+    }
+
+    private void btnRefresh_Clicked(object sender, EventArgs e)
+    {
+        this.RefreshScreen();
+    }
+
+    #endregion
+
+    #region Events
     private async void lvDebtors_ItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
         try
@@ -93,23 +127,30 @@ public partial class DebtorView : ContentPage
         }
     }
 
-    private void UpdateBusyIndicator(bool value)
+    private async void searchBar_TextChanged(object sender, TextChangedEventArgs e)
     {
-        busyIndicator.IsRunning = value;
-        busyIndicator.IsVisible = value;
+        try
+        {
+            SearchBar searchBar = (SearchBar)sender;
 
-        stkMain.IsEnabled = !value;
-    }
+            if (!string.IsNullOrWhiteSpace(searchBar.Text))
+            {
+                List<DebtorModel> list = listDebtors.Where(x => x.CustomerName.Contains(searchBar.Text, StringComparison.InvariantCultureIgnoreCase)).OrderByDescending(x => x.Id).ToList();
 
-    private void RefreshScreen()
-    {
-        lvDebtors.ItemsSource = new List<DebtorModel>();
+                lvDebtors.ItemsSource = new List<DebtorModel>();
+                lvDebtors.ItemsSource = list;
+            }
+            else
+            {
+                lvDebtors.ItemsSource = new List<DebtorModel>();
+                lvDebtors.ItemsSource = listDebtors.OrderByDescending(m => m.Id);
+            }
+        }
+        catch (Exception exc)
+        {
+            await DisplayAlert("Error", exc.Message, "Aceptar");
+        }
+    } 
 
-        LoadScreen();
-    }
-
-    private void btnRefresh_Clicked(object sender, EventArgs e)
-    {
-        this.RefreshScreen();
-    }
+    #endregion
 }

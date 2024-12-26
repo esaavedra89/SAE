@@ -7,15 +7,26 @@ namespace SAE.Views.Sale;
 
 public partial class DeliveryNoteView : ContentPage
 {
-    MenuItemModel _itemSelected = null;
+    #region Variables
+
     APIServices _apiSrvices = new APIServices();
+    List<DeliveryNoteModel> listNotes = new List<DeliveryNoteModel>();
+    MenuItemModel _itemSelected = null;
+
+    #endregion
+
+    #region Constructors
 
     public DeliveryNoteView(MenuItemModel itemSelected)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         _itemSelected = itemSelected;
         LoadScreen();
     }
+
+    #endregion
+
+    #region Methods
 
     public async void LoadScreen()
     {
@@ -23,7 +34,7 @@ public partial class DeliveryNoteView : ContentPage
         {
             this.UpdateBusyIndicator(true);
 
-            List<DeliveryNoteModel> listNotes = await _apiSrvices.GetDeliveryNotes();
+            listNotes = await _apiSrvices.GetDeliveryNotes();
             if (listNotes.Count > 0)
                 lvDeliveryNotes.ItemsSource = listNotes.OrderByDescending(m => m.Number);
             else
@@ -67,7 +78,7 @@ public partial class DeliveryNoteView : ContentPage
                     this.UpdateBusyIndicator(true);
 
                     bool response = await _apiSrvices.DeleteDeliveryNote(itemSelected.Id);
-                    if (response) 
+                    if (response)
                     {
                         await DisplayAlert("Exitos", "La nota ha sido eliminada", "Aceptar");
 
@@ -105,4 +116,34 @@ public partial class DeliveryNoteView : ContentPage
     {
         this.RefreshScreen();
     }
+
+    #endregion
+
+    #region Events
+
+    private async void searchBar_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        try
+        {
+            SearchBar searchBar = (SearchBar)sender;
+            if (!string.IsNullOrWhiteSpace(searchBar.Text))
+            {
+                List<DeliveryNoteModel> list = listNotes.Where(x => x.CustomerName.Contains(searchBar.Text, StringComparison.InvariantCultureIgnoreCase)).OrderByDescending(x => x.Number).ToList();
+
+                lvDeliveryNotes.ItemsSource = new List<DeliveryNoteModel>();
+                lvDeliveryNotes.ItemsSource = list;
+            }
+            else
+            {
+                lvDeliveryNotes.ItemsSource = new List<DeliveryNoteModel>();
+                lvDeliveryNotes.ItemsSource = listNotes.OrderByDescending(m => m.Number);
+            }
+        }
+        catch (Exception exc)
+        {
+            await DisplayAlert("Error", exc.Message, "Aceptar");
+        }
+    }
+
+    #endregion
 }

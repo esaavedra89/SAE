@@ -11,6 +11,15 @@
         Padding="5"
         x:Name="stkMain">
         <ActivityIndicator MaximumHeightRequest="20" x:Name="busyIndicator"/>
+        <SearchBar 
+            BackgroundColor="#512BD4"
+            HeightRequest="20" 
+            Placeholder="Buscar" 
+            PlaceholderColor="White"
+            TextColor="White"
+            CancelButtonColor="White"
+            TextChanged="searchBar_TextChanged"
+            x:Name="searchBar"/>
         <StackLayout>
             <Grid Padding="0"
                 BackgroundColor="#512BD4">

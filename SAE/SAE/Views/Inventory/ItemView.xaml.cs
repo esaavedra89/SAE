@@ -6,24 +6,36 @@ namespace SAE.Views.Inventory;
 
 public partial class ItemView : ContentPage
 {
-    MenuItemModel _menuSelected = null;
+
+    #region Variables
+
     APIServices _apiSrvices = new APIServices();
+    List<ItemModel> items = new List<ItemModel>();
+    MenuItemModel _menuSelected = null;
+
+    #endregion
+
+    #region Constructors
 
     public ItemView(MenuItemModel menuSelected)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         _menuSelected = menuSelected;
 
         LoadScreen();
     }
+
+    #endregion
+
+    #region Methods
 
     public async void LoadScreen()
     {
         try
         {
             this.UpdateBusyIndicator(true);
-            
-            List<ItemModel> items = await _apiSrvices.GetItems();
+
+            items = await _apiSrvices.GetItems();
             if (items.Count > 0)
                 lvItems.ItemsSource = items.OrderBy(m => m.Name);
             else
@@ -48,6 +60,30 @@ public partial class ItemView : ContentPage
             await DisplayAlert("Error", exc.Message, "Aceptar");
         }
     }
+
+    private void RefreshScreen()
+    {
+        lvItems.ItemsSource = new List<ItemModel>();
+
+        LoadScreen();
+    }
+
+    private void UpdateBusyIndicator(bool value)
+    {
+        busyIndicator.IsRunning = value;
+        busyIndicator.IsVisible = value;
+
+        stkMain.IsEnabled = !value;
+    }
+
+    private void btnRefresh_Clicked(object sender, EventArgs e)
+    {
+        this.RefreshScreen();
+    }
+
+    #endregion
+
+    #region Events
 
     private async void lvItems_ItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
@@ -76,7 +112,7 @@ public partial class ItemView : ContentPage
                     else
                         this.UpdateBusyIndicator(false);
                 }
-            } 
+            }
 
         }
         catch (Exception exc)
@@ -87,23 +123,29 @@ public partial class ItemView : ContentPage
         this.UpdateBusyIndicator(false);
     }
 
-    private void RefreshScreen()
+    private async void searchBar_TextChanged(object sender, TextChangedEventArgs e)
     {
-        lvItems.ItemsSource = new List<ItemModel>();
+        try
+        {
+            SearchBar searchBar = (SearchBar)sender;
+            if (!string.IsNullOrWhiteSpace(searchBar.Text))
+            {
+                List<ItemModel> list = items.Where(x => x.Name.Contains(searchBar.Text, StringComparison.InvariantCultureIgnoreCase)).OrderBy(x => x.Name).ToList();
 
-        LoadScreen();
-    }
+                lvItems.ItemsSource = new List<ItemModel>();
+                lvItems.ItemsSource = list;
+            }
+            else
+            {
+                lvItems.ItemsSource = new List<ItemModel>();
+                lvItems.ItemsSource = items.OrderBy(m => m.Name);
+            }
+        }
+        catch (Exception exc)
+        {
+            await DisplayAlert("Error", exc.Message, "Aceptar");
+        }
+    } 
 
-    private void UpdateBusyIndicator(bool value)
-    {
-        busyIndicator.IsRunning = value;
-        busyIndicator.IsVisible = value;
-
-        stkMain.IsEnabled = !value;
-    }
-
-    private void btnRefresh_Clicked(object sender, EventArgs e)
-    {
-        this.RefreshScreen();
-    }
+    #endregion
 }

@@ -33,6 +33,7 @@ public partial class LoginView : ContentPage
 
         if (entPass.Text != _password)
         {
+            entPass.Text = string.Empty;
             await DisplayAlert("Alerta", "contraseña incorrecta", "Aceptar");
             return;
         }
