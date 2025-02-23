@@ -336,7 +336,53 @@ public partial class DebtorsDetailView : ContentPage
         }
         catch (Exception exc)
         {
-            throw exc;
+            await DisplayAlert("Error", exc.Message, "Aceptar");
+        }
+    }
+
+    private async void ImageButton_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            if (_customer == null)
+            {
+                await DisplayAlert("Error", "Debe seleccionar el cliente.", "Aceptar");
+                return;
+            }
+            else if (string.IsNullOrWhiteSpace(_customer.PhoneNumber))
+            {
+                await DisplayAlert("Error", "El cliente debe tener un número teléfono asignado.", "Aceptar");
+                return;
+            }
+
+            decimal actualDebt = Convert.ToDecimal(entActualDebt.Text);
+            string text = "whatsapp://send?phone=" + _customer.PhoneNumber;
+
+            string action = await DisplayActionSheet("Opciones", "Cancel", null, "Enviar deuda", "Enviar recordatorio");
+            if (action == "Enviar deuda")
+            {
+                text = text + "&text=" + $"{actualDebt.ToString("N2")}$, esta es la deuda actual que presenta con *Dani Cosmeticos*." +
+                    $" Cualquier inquietud, nos la hace llegar, Saludos";
+            }
+            else if (action == "Enviar recordatorio")
+            {
+                text = text + "&text=" + 
+                    $"Saludos, por aquí para hacer un recordatorio de la deuda que presenta con *Dani Cosmeticos: {actualDebt.ToString("N2")}$* \n \n" +
+                    $"Pago móvil \n" +
+                    $"*Banco Mercantil* \n" +
+                    $"0105\n" +
+                    $"04121897161\n" +
+                    $"20000662\n \n" +
+                    $"Cualquier duda nos la hace llegar y para recordarle que trabajamos con la tasa del *BCV*";
+            }
+            else
+                return;
+
+            await Browser.Default.OpenAsync(new Uri(text), BrowserLaunchMode.External);
+        }
+        catch (Exception exc)
+        {
+            await DisplayAlert("Error", exc.Message, "Aceptar");
         }
     }
 }

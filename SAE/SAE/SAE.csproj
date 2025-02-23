@@ -40,6 +40,11 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
 	  <AndroidPackageFormat>apk</AndroidPackageFormat>
+	  <AndroidKeyStore>False</AndroidKeyStore>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-android|AnyCPU'">
+	  <AndroidKeyStore>False</AndroidKeyStore>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -67,6 +72,7 @@
 	  <None Remove="Resources\Images\ic_refresh.png" />
 	  <None Remove="Resources\Images\ic_save.png" />
 	  <None Remove="Resources\Images\ic_search.png" />
+	  <None Remove="Resources\Images\whatsApp_Business_icon.png" />
 	</ItemGroup>
 
 	<ItemGroup>
