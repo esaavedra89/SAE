@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,5 +20,15 @@ namespace SAE.Models.Inventory
         public decimal ProfitPercentage { get; set; }
         public decimal TotalPriceCalculated { get; set; }
         public decimal FinalPrice { get; set; }
+
+        [JsonIgnore]
+        [NotMapped]
+        public string FullNameDescription
+        {
+            get
+            {
+                return $"{this.Name} - {this.FinalPrice.ToString("N2")}$";
+            }
+        }
     }
 }

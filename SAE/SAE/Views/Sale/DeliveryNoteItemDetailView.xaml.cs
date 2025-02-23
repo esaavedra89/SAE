@@ -55,7 +55,7 @@ public partial class DeliveryNoteItemDetailView : ContentPage
         }
         catch (Exception exc)
         {
-            throw exc;
+            await DisplayAlert("Error", exc.Message, "Aceptar");
         }
 
         return items;

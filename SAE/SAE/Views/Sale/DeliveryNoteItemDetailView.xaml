@@ -22,7 +22,7 @@
                 Grid.ColumnSpan="2"
                 Grid.Row="0"
                 Title="Seleciona el producto"
-                ItemDisplayBinding="{Binding Name}"
+                ItemDisplayBinding="{Binding FullNameDescription}"
                 PropertyChanged="pkrItem_PropertyChanged"
                 x:Name="pkrItem"/>
             <!--Row 1-->

@@ -307,9 +307,9 @@ public partial class DeliveryNoteDetailView : ContentPage
             decimal discountPercentage = Convert.ToDecimal(string.IsNullOrEmpty(entDiscountPercentage.Text) ? "0" : entDiscountPercentage.Text);
             if (discountPercentage < 0 || _items.Where(m => m.Active).ToList().Count == 0)
                 return;
-            else if (discountPercentage > 15)
+            else if (discountPercentage > 25)
             {
-                await DisplayAlert("Advertencia", "No se permiten descuentos mayor al 15%", "Aceptar");
+                await DisplayAlert("Advertencia", "No se permiten descuentos mayores al 25%", "Aceptar");
                 entDiscountPercentage.Text = "0";
                 return;
             }
@@ -335,7 +335,7 @@ public partial class DeliveryNoteDetailView : ContentPage
                 }
             }
         }
-        catch (Exception exc)
+        catch (Exception)
         {
             
         }
@@ -390,7 +390,7 @@ public partial class DeliveryNoteDetailView : ContentPage
         }
         catch (Exception exc)
         {
-            throw exc;
+            await DisplayAlert("Error", exc.Message, "Aceptar");
         }
     }
 }

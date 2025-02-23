@@ -58,6 +58,8 @@ public partial class DebtorsDetailView : ContentPage
 
             _payments = await GetPayments();
             lvDebtorPayments.ItemsSource = _payments;
+
+            this.FindCustomer();
         }
         catch (Exception exc)
         {
@@ -384,5 +386,40 @@ public partial class DebtorsDetailView : ContentPage
         {
             await DisplayAlert("Error", exc.Message, "Aceptar");
         }
+    }
+
+    private async void FindCustomer()
+    {
+        await Task.Run(async() => 
+        {
+            try
+            {
+                if (_itemSelected != null)
+                {
+                    List<CustomerModel> customers = await _apiServices.GetCustomers();
+                    if (customers.Count > 0)
+                    {
+                        CustomerModel customer = customers.FirstOrDefault(m => m.FullName.Contains(_itemSelected.CustomerName));
+                        if (customer != null)
+                            _customer = customer;
+                        else
+                            this.BeginInvokeOnMainThread("Advertencia", "No se pudo ubicar al cliente.");
+                    }
+                }
+
+            }
+            catch (Exception exc)
+            {
+                this.BeginInvokeOnMainThread("Error", exc.Message);
+            }
+        });
+    }
+
+    private void BeginInvokeOnMainThread(string title, string message)
+    {
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            await DisplayAlert(title, message, "Aceptar");
+        });
     }
 }
