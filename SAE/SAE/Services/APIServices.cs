@@ -45,12 +45,12 @@ namespace SAE.Services
                 }
                 else
                 {
-
+                    throw new Exception("Ha ocurrido un error al actualizar: " + response.RequestMessage.ToString());
                 }
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Ha ocurrido una excepción al actualizar: " + ex.Message.ToString());
             }
 
             return items;
@@ -88,7 +88,7 @@ namespace SAE.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Ha ocurrido una excepción al actualizar: " + ex.Message.ToString());
             }
 
             return item;
@@ -110,7 +110,7 @@ namespace SAE.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Ha ocurrido una excepción al actualizar: " + ex.Message.ToString());
             }
 
             return true;
@@ -141,7 +141,7 @@ namespace SAE.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Ha ocurrido una excepción al actualizar: " + ex.Message.ToString());
             }
 
             return items;
@@ -179,7 +179,7 @@ namespace SAE.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Ha ocurrido una excepción al actualizar: " + ex.Message.ToString());
             }
 
             return dNote;
@@ -205,7 +205,7 @@ namespace SAE.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Ha ocurrido una excepción al actualizar: " + ex.Message.ToString());
             }
 
             return dNotes;
@@ -227,7 +227,7 @@ namespace SAE.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Ha ocurrido una excepción al actualizar: " + ex.Message.ToString());
             }
 
             return true;
@@ -257,7 +257,7 @@ namespace SAE.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Ha ocurrido una excepción al actualizar: " + ex.Message.ToString());
             }
 
             return dNotes;
@@ -286,7 +286,7 @@ namespace SAE.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Ha ocurrido una excepción al actualizar: " + ex.Message.ToString());
             }
 
             return payments;
@@ -321,7 +321,7 @@ namespace SAE.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Ha ocurrido una excepción al actualizar: " + ex.Message.ToString());
             }
 
             return debtor;
@@ -343,7 +343,7 @@ namespace SAE.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Ha ocurrido una excepción al actualizar: " + ex.Message.ToString());
             }
 
             return true;
@@ -373,12 +373,12 @@ namespace SAE.Services
                 }
                 else
                 {
-
+                    throw new Exception("Ha ocurrido un error al actualizar: " + response.RequestMessage.ToString());
                 }
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Ha ocurrido una excepción al actualizar: " + ex.Message.ToString());
             }
 
             return customers;
@@ -417,7 +417,7 @@ namespace SAE.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Ha ocurrido una excepción al actualizar: " + ex.Message.ToString());
             }
 
             return customer;

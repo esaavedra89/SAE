@@ -181,6 +181,17 @@ public partial class DebtorsDetailView : ContentPage
             {
                 payments = await _apiServices.GetPayments(_itemSelected.Id);
                 if (payments.Count == 0) payments = new List<DebtorPaymentModel>();
+                else
+                {
+                    DebtorPaymentModel lastpayment = payments.LastOrDefault();
+                    if (lastpayment != null)
+                    {
+                        if ((DateTime.Now.Date - lastpayment.Date.Date).TotalDays > 30)
+                        {
+                            dpkDate.BackgroundColor = Color.FromArgb("#69051b");
+                        }
+                    }
+                }
             }
         }
         catch (Exception exc)

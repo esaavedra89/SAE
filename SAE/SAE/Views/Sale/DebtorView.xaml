@@ -56,7 +56,7 @@
                 <DataTemplate>
                     <ViewCell>
                         <Grid Padding="0"
-                    BackgroundColor="#512BD4"
+                              BackgroundColor="{Binding BackgroundColor}"
                               VerticalOptions="FillAndExpand">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="0.3*" />
