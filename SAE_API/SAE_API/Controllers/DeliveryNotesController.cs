@@ -23,23 +23,13 @@ namespace SAE_API.Controllers
         public async Task<ActionResult<IEnumerable<DeliveryNote>>> Get()
         {
 
-            //List< DeliveryNote > list = null;
-            //try
-            //{
-                if (_context.DeliveryNotes == null)
-                    return NotFound();
+            // Definimos la fecha fija (Año, Mes, Día)
+            DateTime fechaFija = new DateTime(2025, 6, 1);
 
-                return await _context.DeliveryNotes.Where(x => x.Active).ToListAsync();
-                //return await _context.DeliveryNotes.ToListAsync();
-                //list = await _context.DeliveryNotes.ToListAsync();
-                
-            //}
-            //catch (Exception exc)
-            //{
-
-                
-            //}
-            //return list;
+            // Filtramos donde Active sea true Y la fecha sea mayor o igual al 01/06/2025
+            return await _context.DeliveryNotes
+                .Where(x => x.Active && x.Date >= fechaFija)
+                .ToListAsync();
         }
 
         // GET api/<DeliveryNotesController>/5
