@@ -23,12 +23,12 @@ namespace SAE_API.Controllers
         public async Task<ActionResult<IEnumerable<DeliveryNote>>> Get()
         {
 
-            // Definimos la fecha fija (Año, Mes, Día)
-            DateTime fechaFija = new DateTime(2025, 6, 1);
+            // Calculamos la fecha de hace exactamente 6 meses a partir de hoy
+            DateTime fechaHaceSeisMeses = DateTime.Now.AddMonths(-6);
 
-            // Filtramos donde Active sea true Y la fecha sea mayor o igual al 01/06/2025
+            // Filtramos donde Active sea true Y la fecha sea mayor o igual a la calculada
             return await _context.DeliveryNotes
-                .Where(x => x.Active && x.Date >= fechaFija)
+                .Where(x => x.Active && x.Date >= fechaHaceSeisMeses)
                 .ToListAsync();
         }
 
