@@ -17,14 +17,19 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <!--Row 0-->
-            <Picker
+            <!--<Picker
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
                 Grid.Row="0"
                 Title="Seleciona el producto"
                 ItemDisplayBinding="{Binding FullNameDescription}"
                 PropertyChanged="pkrItem_PropertyChanged"
-                x:Name="pkrItem"/>
+                x:Name="pkrItem"/>-->
+            <Label
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Grid.Row="0"
+                x:Name="lblItemSelected"/>
             <!--Row 1-->
             <Label
                 Grid.Column="0"

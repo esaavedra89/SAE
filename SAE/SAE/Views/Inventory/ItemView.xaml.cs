@@ -1,6 +1,7 @@
 using SAE.Models;
 using SAE.Models.Inventory;
 using SAE.Services;
+using SAE.Views.Sale;
 
 namespace SAE.Views.Inventory;
 
@@ -10,17 +11,29 @@ public partial class ItemView : ContentPage
     #region Variables
 
     APIServices _apiSrvices = new APIServices();
-    List<ItemModel> items = new List<ItemModel>();
-    MenuItemModel _menuSelected = null;
+    DeliveryNoteDetailView? _parent;
+    ItemDeliveryNoteModel? _deliveryItem;
+    MenuItemModel? _menuSelected;
+    List<ItemModel> _items = new List<ItemModel>();
 
     #endregion
 
     #region Constructors
 
-    public ItemView(MenuItemModel menuSelected)
+    public ItemView(MenuItemModel? menuSelected)
     {
         InitializeComponent();
         _menuSelected = menuSelected;
+
+        LoadScreen();
+    }
+
+    public ItemView(ItemDeliveryNoteModel? deliveryItem, DeliveryNoteDetailView parent)
+    {
+        InitializeComponent();
+
+        _deliveryItem = deliveryItem;
+        _parent = parent;
 
         LoadScreen();
     }
@@ -35,9 +48,14 @@ public partial class ItemView : ContentPage
         {
             this.UpdateBusyIndicator(true);
 
-            items = await _apiSrvices.GetItems();
-            if (items.Count > 0)
-                lvItems.ItemsSource = items.OrderBy(m => m.Name);
+            _items = await _apiSrvices.GetItems();
+            if (_items.Count > 0)
+            {
+                if (_deliveryItem == null && _parent == null)
+                    lvItems.ItemsSource = _items.OrderBy(m => m.Name);
+                else
+                    lvItems.ItemsSource = _items = _items.Where(m => m.Quantity > 0).OrderBy(m => m.Name).ToList();
+            }
             else
                 lvItems.ItemsSource = new List<ItemModel>();
         }
@@ -89,31 +107,37 @@ public partial class ItemView : ContentPage
     {
         try
         {
-            ItemModel itemSelected = e.SelectedItem as ItemModel;
+            ItemModel? itemSelected = e.SelectedItem as ItemModel;
             if (itemSelected == null) return;
 
-            string action = await DisplayActionSheet("Opciones", "Cancel", null, "Ver", "Eliminar");
-            if (action == "Ver")
-                await Navigation.PushAsync(new ItemDetailView(itemSelected, this));
-            else if (action == "Eliminar")
+            if (_deliveryItem == null && _parent == null)
             {
-                bool answer = await DisplayAlert("Pregunta", "Desea eliminar este item?", "Si", "No");
-                if (answer)
+                string action = await DisplayActionSheet("Opciones", "Cancel", null, "Ver", "Eliminar");
+                if (action == "Ver")
+                    await Navigation.PushAsync(new ItemDetailView(itemSelected, this));
+                else if (action == "Eliminar")
                 {
-                    this.UpdateBusyIndicator(true);
-
-                    bool response = await _apiSrvices.DeleteItem(itemSelected.Id);
-                    if (response)
+                    bool answer = await DisplayAlert("Pregunta", "Desea eliminar este item?", "Si", "No");
+                    if (answer)
                     {
-                        await DisplayAlert("Exitos", "El item ha sido eliminado", "Aceptar");
+                        this.UpdateBusyIndicator(true);
 
-                        this.RefreshScreen();
+                        bool response = await _apiSrvices.DeleteItem(itemSelected.Id);
+                        if (response)
+                        {
+                            await DisplayAlert("Exitos", "El item ha sido eliminado", "Aceptar");
+
+                            this.RefreshScreen();
+                        }
+                        else
+                            this.UpdateBusyIndicator(false);
                     }
-                    else
-                        this.UpdateBusyIndicator(false);
                 }
             }
-
+            else
+            {
+                await Navigation.PushModalAsync(new DeliveryNoteItemDetailView(null, _parent, itemSelected, this));
+            }
         }
         catch (Exception exc)
         {
@@ -130,7 +154,7 @@ public partial class ItemView : ContentPage
             SearchBar searchBar = (SearchBar)sender;
             if (!string.IsNullOrWhiteSpace(searchBar.Text))
             {
-                List<ItemModel> list = items.Where(x => x.Name.Contains(searchBar.Text, StringComparison.InvariantCultureIgnoreCase)).OrderBy(x => x.Name).ToList();
+                List<ItemModel> list = _items.Where(x => x.Name.Contains(searchBar.Text, StringComparison.InvariantCultureIgnoreCase)).OrderBy(x => x.Name).ToList();
 
                 lvItems.ItemsSource = new List<ItemModel>();
                 lvItems.ItemsSource = list;
@@ -138,7 +162,7 @@ public partial class ItemView : ContentPage
             else
             {
                 lvItems.ItemsSource = new List<ItemModel>();
-                lvItems.ItemsSource = items.OrderBy(m => m.Name);
+                lvItems.ItemsSource = _items.OrderBy(m => m.Name);
             }
         }
         catch (Exception exc)

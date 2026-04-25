@@ -1,19 +1,23 @@
 using SAE.Models.Inventory;
 using SAE.Services;
+using SAE.Views.Inventory;
 
 namespace SAE.Views.Sale;
 
 public partial class DeliveryNoteItemDetailView : ContentPage
 {
+    ItemModel? _itemSelected;
     ItemDeliveryNoteModel _deliveryItem;
     DeliveryNoteDetailView _parent;
-    APIServices _apiServices = new APIServices();
+    ItemView? _itemView;
 
-    public DeliveryNoteItemDetailView(ItemDeliveryNoteModel deliveryItem, DeliveryNoteDetailView parent)
-	{
-		InitializeComponent();
+    public DeliveryNoteItemDetailView(ItemDeliveryNoteModel? deliveryItem, DeliveryNoteDetailView parent, ItemModel? itemSelected, ItemView? itemView = null)
+    {
+        InitializeComponent();
         _deliveryItem = deliveryItem == null ? new ItemDeliveryNoteModel() { Active = true } : deliveryItem;
         _parent = parent;
+        _itemSelected = itemSelected;
+        _itemView = itemView;
         LoadScreen();
     }
 
@@ -21,14 +25,29 @@ public partial class DeliveryNoteItemDetailView : ContentPage
     {
         try
         {
-            List<ItemModel> listItems = await GetProductos();
-            pkrItem.ItemsSource = listItems;
+            if (_itemView != null)
+                await _itemView.Navigation.PopModalAsync();
 
-            if (_deliveryItem == null || _deliveryItem.Id == 0) return;
 
-            if (pkrItem.ItemsSource.Count > 0)
-                pkrItem.SelectedItem = listItems.Where(m => m.Id == _deliveryItem.ItemId).FirstOrDefault();
+            if (_deliveryItem.Id > 0 && _itemSelected == null)
+            {
 
+            }
+            else
+            {
+                if (_itemSelected == null)
+                {
+                    await DisplayAlert("Error", "Item es nulo", "Aceptar");
+                    return;
+                }
+
+                _deliveryItem.Item = _itemSelected;
+                _deliveryItem.PriceItem = _itemSelected.FinalPrice;
+                _deliveryItem.ItemId = _itemSelected.Id;
+                _deliveryItem.DeliveryNoteId = _parent._itemSelected.Id;
+            }
+
+            lblItemSelected.Text = _deliveryItem.Item.Name;
             entItemQuantity.Text = _deliveryItem.ItemQuantity.ToString();
             entPriceItem.Text = _deliveryItem.PriceItem.ToString();
             entTotalItem.Text = _deliveryItem.TotalItem.ToString();
@@ -39,27 +58,24 @@ public partial class DeliveryNoteItemDetailView : ContentPage
         }
     }
 
-    private async Task<List<ItemModel>> GetProductos()
-    {
-        List<ItemModel> items = new List<ItemModel>();
-        try
-        {
-            decimal cero = 0.0000M;
-            items = await _apiServices.GetItems();
-            if (items.Count == 0)
-                items = new List<ItemModel>();
-            else
-            {
-                items = items.Where(m => m.Quantity > 0).OrderBy(m => m.Name).ToList();
-            }
-        }
-        catch (Exception exc)
-        {
-            await DisplayAlert("Error", exc.Message, "Aceptar");
-        }
+    //private async Task<List<ItemModel>> GetProductos()
+    //{
+    //    List<ItemModel> items = new List<ItemModel>();
+    //    try
+    //    {
+    //        items = await _apiServices.GetItems();
+    //        if (items.Count == 0)
+    //            items = new List<ItemModel>();
+    //        else
+    //            items = items.Where(m => m.Quantity > 0).OrderBy(m => m.Name).ToList();
+    //    }
+    //    catch (Exception exc)
+    //    {
+    //        await DisplayAlert("Error", exc.Message, "Aceptar");
+    //    }
 
-        return items;
-    }
+    //    return items;
+    //}
 
     private async void btnSave_Clicked(object sender, EventArgs e)
     {
@@ -68,11 +84,9 @@ public partial class DeliveryNoteItemDetailView : ContentPage
             bool validate = await Validate();
             if (!validate) return;
 
-            ItemModel item = pkrItem.SelectedItem as ItemModel;
-
             ItemDeliveryNoteModel objItem = new ItemDeliveryNoteModel();
-            objItem.Item = item;
-            objItem.ItemId = item.Id;
+            objItem.Item = _deliveryItem.Item;
+            objItem.ItemId = _deliveryItem.Item.Id;
             objItem.ItemQuantity = Convert.ToInt32(entItemQuantity.Text);
             objItem.PriceItem = Convert.ToDecimal(entPriceItem.Text);
             objItem.TotalItem = Convert.ToDecimal(entTotalItem.Text);
@@ -94,7 +108,7 @@ public partial class DeliveryNoteItemDetailView : ContentPage
     {
         try
         {
-            if (pkrItem == null || pkrItem.SelectedItem == null)
+            if (_deliveryItem.Item.Id == 0)
                 await DisplayAlert("Advertencia", "Debe seleccionar un producto", "Aceptar");
 
             if (string.IsNullOrEmpty(entItemQuantity.Text))
@@ -119,14 +133,10 @@ public partial class DeliveryNoteItemDetailView : ContentPage
     {
         try
         {
-            if (pkrItem != null && pkrItem.SelectedItem != null)
+            if (_deliveryItem != null && _deliveryItem.Item != null && _deliveryItem.ItemId > 0)
             {
-                ItemModel item = pkrItem.SelectedItem as ItemModel;
-                if (item != null)
-                {
-                    decimal total = item.FinalPrice * Convert.ToDecimal(string.IsNullOrEmpty(entItemQuantity.Text) ? "0" : entItemQuantity.Text);
-                    entTotalItem.Text = total.ToString();
-                }
+                decimal total = _deliveryItem.Item.FinalPrice * Convert.ToDecimal(string.IsNullOrEmpty(entItemQuantity.Text) ? "0" : entItemQuantity.Text);
+                entTotalItem.Text = total.ToString();
             }
         }
         catch (Exception exc)
@@ -139,12 +149,8 @@ public partial class DeliveryNoteItemDetailView : ContentPage
     {
         try
         {
-            if (pkrItem != null && pkrItem.SelectedItem != null)
-            {
-                ItemModel item = pkrItem.SelectedItem as ItemModel;
-                if (item != null)
-                    entPriceItem.Text = item.FinalPrice.ToString();
-            }
+            if (_deliveryItem.Item != null && _deliveryItem.ItemId > 0)
+                entPriceItem.Text = _deliveryItem.Item.FinalPrice.ToString();
         }
         catch (Exception exc)
         {

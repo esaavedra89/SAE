@@ -14,6 +14,6 @@ namespace SAE.Models.Inventory
         public int DeliveryNoteId { get; set; }
         public bool Active { get; set; }
 
-        public ItemModel Item { get; set; }
+        public ItemModel? Item { get; set; }
     }
 }

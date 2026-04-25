@@ -1,17 +1,18 @@
 using SAE.Models.Inventory;
 using SAE.Models.Sale;
 using SAE.Services;
+using SAE.Views.Inventory;
 
 namespace SAE.Views.Sale;
 
 public partial class DeliveryNoteDetailView : ContentPage
 {
-    DeliveryNoteModel _itemSelected = null;
+    public DeliveryNoteModel? _itemSelected;
     DeliveryNoteModel dNoteToSave = new DeliveryNoteModel();
     List<ItemDeliveryNoteModel> _items = new List<ItemDeliveryNoteModel>();
     APIServices _apiServices = new APIServices();
     DeliveryNoteView _parent;
-    CustomerModel _customer = null;
+    CustomerModel? _customer;
 
     public DeliveryNoteDetailView(DeliveryNoteModel deliveryNote, DeliveryNoteView parent)
 	{
@@ -68,7 +69,7 @@ public partial class DeliveryNoteDetailView : ContentPage
     {
         try
         {
-            await Navigation.PushModalAsync(new DeliveryNoteItemDetailView(null, this));
+            await Navigation.PushModalAsync(new ItemView(null, this));
         }
         catch (Exception exc)
         {
@@ -80,7 +81,7 @@ public partial class DeliveryNoteDetailView : ContentPage
     {
         try
         {
-            ItemDeliveryNoteModel itemSelected = e.SelectedItem as ItemDeliveryNoteModel;
+            ItemDeliveryNoteModel? itemSelected = e.SelectedItem as ItemDeliveryNoteModel;
             if (itemSelected == null) return;
 
             string action = await DisplayActionSheet("Seleccione", "Cancel", null, "Ver", "Eliminar");
@@ -88,7 +89,7 @@ public partial class DeliveryNoteDetailView : ContentPage
             if (string.IsNullOrEmpty(action)) return;
 
             if (action == "Ver")
-                await Navigation.PushModalAsync(new DeliveryNoteItemDetailView(itemSelected, this));
+                await Navigation.PushModalAsync(new DeliveryNoteItemDetailView(itemSelected, this, itemSelected.Item, null));
             else if (action == "Eliminar")
             {
                 bool answer = await DisplayAlert("Pregunta?", "Desea eliminar este producto de la lista?", "Si", "No");
@@ -96,7 +97,7 @@ public partial class DeliveryNoteDetailView : ContentPage
                 {
                     if (itemSelected.Id > 0)
                     {
-                        ItemDeliveryNoteModel item = _items.Find(x => x.Id == itemSelected.Id);
+                        ItemDeliveryNoteModel? item = _items.Find(x => x.Id == itemSelected.Id);
                         if (item != null)
                             item.Active = false;
                         else
@@ -282,7 +283,7 @@ public partial class DeliveryNoteDetailView : ContentPage
     {
         try
         {
-            ItemDeliveryNoteModel itemList = _items.Where(m => m.Item.Name.Contains(item.Item.Name) && m.Active).FirstOrDefault();
+            ItemDeliveryNoteModel? itemList = _items.Where(m => m.Item.Name.Contains(item.Item.Name) && m.Active).FirstOrDefault();
             if (itemList == null)
                 _items.Add(item);
             else
@@ -408,7 +409,7 @@ public partial class DeliveryNoteDetailView : ContentPage
                     List<CustomerModel> customers = await _apiServices.GetCustomers();
                     if (customers.Count > 0)
                     {
-                        CustomerModel customer = customers.FirstOrDefault(m => m.FullName.Contains(_itemSelected.CustomerName));
+                        CustomerModel? customer = customers.FirstOrDefault(m => m.FullName.Contains(_itemSelected.CustomerName));
                         if (customer != null)
                             _customer = customer;
                         else
