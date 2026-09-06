@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SAE_API.Models;
 using System.Collections.Generic;
+using System.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,12 +24,12 @@ namespace SAE_API.Controllers
         public async Task<ActionResult<IEnumerable<DeliveryNote>>> Get()
         {
 
-            // Calculamos la fecha de hace exactamente 6 meses a partir de hoy
-            DateTime fechaHaceSeisMeses = DateTime.Now.AddMonths(-6);
+            // Calculamos la fecha de hace exactamente 2 meses a partir de hoy
+            DateTime fechaHaceDosMeses = DateTime.Now.AddMonths(-2);
 
             // Filtramos donde Active sea true Y la fecha sea mayor o igual a la calculada
             return await _context.DeliveryNotes
-                .Where(x => x.Active && x.Date >= fechaHaceSeisMeses)
+                .Where(x => x.Active && x.Date >= fechaHaceDosMeses)
                 .ToListAsync();
         }
 
@@ -55,11 +56,22 @@ namespace SAE_API.Controllers
         [HttpPost]
         public async Task<ActionResult<DeliveryNote>> Post([FromBody] DeliveryNote deliveryNote)
         {
+            await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable); // Ensure atomic stock update.
             try
             {
+                if (deliveryNote == null || deliveryNote.Items == null || !deliveryNote.Items.Any())
+                    return BadRequest("La nota debe tener items.");
+
+                if (deliveryNote.Items.Any(x => x.ItemId <= 0 || x.ItemQuantity <= 0))
+                    return BadRequest("ItemId y ItemQuantity deben ser validos.");
+
+                if (!deliveryNote.Items.Any(x => x.Active && x.ItemId > 0 && x.ItemQuantity > 0))
+                    return BadRequest("La nota debe tener al menos un item activo.");
+
+                deliveryNote.Date = DateTime.SpecifyKind(deliveryNote.Date.Date, DateTimeKind.Unspecified);
                 deliveryNote.CreatedDate = DateTime.Now;
 
-                var list = await _context.DeliveryNotes.ToListAsync();
+                var list = await _context.DeliveryNotes.AsNoTracking().ToListAsync();
 
                 deliveryNote.Number = list.Count + 1;
 
@@ -69,7 +81,7 @@ namespace SAE_API.Controllers
 
                 if (deliveryNote.Id > 0)
                 {
-                    foreach (ItemDeliveryNote item in deliveryNote.Items)
+                    foreach (ItemDeliveryNote item in deliveryNote.Items.Where(x => x.Active))
                     {
                         item.DeliveryNoteId = deliveryNote.Id;
                         item.CreatedDate = DateTime.Now;
@@ -81,25 +93,32 @@ namespace SAE_API.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-                foreach (ItemDeliveryNote itemDelivery in deliveryNote.Items)
+                var grouped = deliveryNote.Items
+                    .Where(x => x.Active)
+                    .GroupBy(x => x.ItemId)
+                    .Select(g => new { ItemId = g.Key, Qty = g.Sum(x => x.ItemQuantity) })
+                    .ToList(); // Consolidate quantity per item.
+
+                foreach (var row in grouped)
                 {
-                    Item item = await _context.Items.FirstOrDefaultAsync(m => m.Id == itemDelivery.ItemId);
-                    if (item != null)
-                    {
-                        item.Quantity = item.Quantity - itemDelivery.ItemQuantity;
-                        if (item.Quantity >= 0)
-                        {
-                            _context.Items.Update(item);
-                        }
-                    } 
+                    Item item = await _context.Items.FirstOrDefaultAsync(m => m.Id == row.ItemId);
+                    if (item == null)
+                        return BadRequest($"Item {row.ItemId} no existe.");
+
+                    if (item.Quantity < row.Qty)
+                        return BadRequest($"Stock insuficiente para item {item.Id}.");
+
+                    item.Quantity -= row.Qty;
+                    _context.Items.Update(item);
                 }
 
                 await _context.SaveChangesAsync();
+                await tx.CommitAsync();
             }
-            catch (Exception exc)
+            catch
             {
-
-             
+                await tx.RollbackAsync(); // Avoid partial writes.
+                throw;
             }
 
             return CreatedAtAction(nameof(Get), new { id = deliveryNote.Id }, deliveryNote);
@@ -107,16 +126,70 @@ namespace SAE_API.Controllers
 
         // PUT api/<DeliveryNotesController>/5
         [HttpPut]
-        public async Task<DeliveryNote> Put([FromBody] DeliveryNote deliveryNote)
+        public async Task<ActionResult<DeliveryNote>> Put([FromBody] DeliveryNote deliveryNote)
         {
+            await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable); // Keep note and stock in sync.
             try
             {
+                if (deliveryNote == null || deliveryNote.Id <= 0)
+                    return BadRequest("Nota invalida.");
+
+                if (deliveryNote.Items == null)
+                    deliveryNote.Items = new List<ItemDeliveryNote>();
+
                 deliveryNote.UpdateddDate = DateTime.Now;
+
+                DeliveryNote storedNote = await _context.DeliveryNotes.FirstOrDefaultAsync(x => x.Id == deliveryNote.Id && x.Active);
+                if (storedNote == null)
+                    return NotFound();
+
+                List<ItemDeliveryNote> storedLines = await _context.ItemDeliveryNotes
+                    .Where(x => x.DeliveryNoteId == deliveryNote.Id && x.Active)
+                    .ToListAsync();
+
+                var incomingByItem = deliveryNote.Items
+                    .Where(x => x.Active && x.ItemQuantity > 0)
+                    .GroupBy(x => x.ItemId)
+                    .ToDictionary(g => g.Key, g => g.Sum(x => x.ItemQuantity));
+
+                var storedByItem = storedLines
+                    .GroupBy(x => x.ItemId)
+                    .ToDictionary(g => g.Key, g => g.Sum(x => x.ItemQuantity));
+
+                var allItemIds = incomingByItem.Keys.Union(storedByItem.Keys).Distinct().ToList();
+                foreach (int itemId in allItemIds)
+                {
+                    incomingByItem.TryGetValue(itemId, out int newQty);
+                    storedByItem.TryGetValue(itemId, out int oldQty);
+                    int delta = newQty - oldQty; // Positive consumes stock, negative returns stock.
+                    if (delta == 0) continue;
+
+                    Item stockItem = await _context.Items.FirstOrDefaultAsync(x => x.Id == itemId);
+                    if (stockItem == null)
+                        return BadRequest($"Item {itemId} no existe.");
+
+                    if (delta > 0)
+                    {
+                        if (stockItem.Quantity < delta)
+                            return BadRequest($"Stock insuficiente para item {stockItem.Id}.");
+
+                        stockItem.Quantity -= delta;
+                    }
+                    else
+                    {
+                        stockItem.Quantity += Math.Abs(delta);
+                    }
+
+                    _context.Items.Update(stockItem);
+                }
 
                 foreach (ItemDeliveryNote itemD in deliveryNote.Items)
                 {
                     if (itemD.Id == 0)
                     {
+                        if (!itemD.Active || itemD.ItemQuantity <= 0 || itemD.ItemId <= 0)
+                            continue;
+
                         itemD.DeliveryNoteId = deliveryNote.Id;
                         itemD.CreatedDate = DateTime.Now;
                         itemD.CreatedBy = deliveryNote.CreatedBy;
@@ -128,48 +201,84 @@ namespace SAE_API.Controllers
                         ItemDeliveryNote itemStored = await _context.ItemDeliveryNotes.Where(m => m.Id == itemD.Id && m.DeliveryNoteId == deliveryNote.Id).FirstOrDefaultAsync();
                         if (itemStored != null)
                         {
-                            if (itemD.Active)
-                            {
-                                itemStored.ItemQuantity = itemD.ItemQuantity;
-                                itemStored.PriceItem = itemD.PriceItem;
-                                itemStored.TotalItem = itemD.TotalItem;
-                                itemStored.Comments = itemD.Comments;
-                                itemStored.ItemId = itemD.ItemId;
-                                itemStored.UpdateddDate = DateTime.Now;
-                                itemStored.UpdateddBy = deliveryNote.UpdateddBy;
+                            itemStored.ItemQuantity = itemD.ItemQuantity;
+                            itemStored.PriceItem = itemD.PriceItem;
+                            itemStored.TotalItem = itemD.TotalItem;
+                            itemStored.Comments = itemD.Comments;
+                            itemStored.ItemId = itemD.ItemId;
+                            itemStored.Active = itemD.Active;
+                            itemStored.UpdateddDate = DateTime.Now;
+                            itemStored.UpdateddBy = deliveryNote.UpdateddBy;
 
-                                _context.ItemDeliveryNotes.Update(itemStored);
-                            }
-                            else
-                                _context.ItemDeliveryNotes.Remove(itemStored);
+                            _context.ItemDeliveryNotes.Update(itemStored);
                         }
                     }
                 }
 
+                HashSet<int> incomingIds = deliveryNote.Items.Where(x => x.Id > 0).Select(x => x.Id).ToHashSet();
+                foreach (ItemDeliveryNote oldLine in storedLines.Where(x => !incomingIds.Contains(x.Id)))
+                {
+                    oldLine.Active = false; // Soft-delete removed lines.
+                    oldLine.UpdateddDate = DateTime.Now;
+                    oldLine.UpdateddBy = deliveryNote.UpdateddBy;
+                    _context.ItemDeliveryNotes.Update(oldLine);
+                }
+
                 await _context.SaveChangesAsync();
 
-                _context.DeliveryNotes.Update(deliveryNote);
+                storedNote.CustomerName = deliveryNote.CustomerName;
+                storedNote.CustomerIdentification = deliveryNote.CustomerIdentification;
+                storedNote.Date = DateTime.SpecifyKind(deliveryNote.Date.Date, DateTimeKind.Unspecified);
+                storedNote.PaymentMethod = deliveryNote.PaymentMethod;
+                storedNote.Subtotal = deliveryNote.Subtotal;
+                storedNote.Discount = deliveryNote.Discount;
+                storedNote.DiscountPercentage = deliveryNote.DiscountPercentage;
+                storedNote.Total = deliveryNote.Total;
+                storedNote.Observation = deliveryNote.Observation;
+                storedNote.Deliver = deliveryNote.Deliver;
+                storedNote.UpdateddDate = DateTime.Now;
+                storedNote.UpdateddBy = deliveryNote.UpdateddBy;
+
+                _context.DeliveryNotes.Update(storedNote);
 
                 await _context.SaveChangesAsync();
+                await tx.CommitAsync();
             }
-            catch (Exception exc)
+            catch
             {
-                throw exc;
+                await tx.RollbackAsync();
+                throw;
             }
 
-            return deliveryNote;
+            return Ok(deliveryNote);
         }
 
         // DELETE api/<DeliveryNotesController>/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            DeliveryNote deliveryNote =_context.DeliveryNotes.Where(m => m.Id == id).FirstOrDefault();
+            await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable); // Keep rollback and delete together.
+            DeliveryNote deliveryNote = _context.DeliveryNotes.Where(m => m.Id == id && m.Active).FirstOrDefault();
             if (deliveryNote != null)
             {
-                List<ItemDeliveryNote> listToRemove = _context.ItemDeliveryNotes.Where(x => x.DeliveryNoteId == id).ToList();
+                List<ItemDeliveryNote> listToRemove = _context.ItemDeliveryNotes.Where(x => x.DeliveryNoteId == id && x.Active).ToList();
                 if (listToRemove.Count > 0)
                 {
+                    var grouped = listToRemove
+                        .GroupBy(x => x.ItemId)
+                        .Select(g => new { ItemId = g.Key, Qty = g.Sum(x => x.ItemQuantity) })
+                        .ToList(); // Sum quantities by item.
+
+                    foreach (var row in grouped)
+                    {
+                        Item item = await _context.Items.FirstOrDefaultAsync(x => x.Id == row.ItemId);
+                        if (item != null)
+                        {
+                            item.Quantity += row.Qty;
+                            _context.Items.Update(item);
+                        }
+                    }
+
                     for (int i = 0; i < listToRemove.Count; i++)
                     {
                         ItemDeliveryNote itemToDelete = listToRemove[i];
@@ -186,6 +295,7 @@ namespace SAE_API.Controllers
                 _context.DeliveryNotes.Update(deliveryNote);
 
                 await _context.SaveChangesAsync();
+                await tx.CommitAsync();
 
                 return Ok();
             }

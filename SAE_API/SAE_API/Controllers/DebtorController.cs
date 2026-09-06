@@ -49,6 +49,7 @@ namespace SAE_API.Controllers
         {
             try
             {
+                debtor.Date = DateTime.SpecifyKind(debtor.Date.Date, DateTimeKind.Unspecified);
                 debtor.CreatedDate = DateTime.Now;
 
                 _context.Debtors.Add(debtor);
@@ -84,6 +85,7 @@ namespace SAE_API.Controllers
         {
             try
             {
+                debtor.Date = DateTime.SpecifyKind(debtor.Date.Date, DateTimeKind.Unspecified);
                 debtor.UpdateddDate = DateTime.Now;
 
                 _context.Debtors.Update(debtor);

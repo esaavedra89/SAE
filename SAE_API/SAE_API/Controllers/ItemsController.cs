@@ -45,6 +45,9 @@ namespace SAE_API.Controllers
         [HttpPost]
         public async Task<ActionResult<Item>> Post([FromBody] Item item)
         {
+            if (item.Quantity < 0)
+                return BadRequest("Quantity no puede ser negativa."); // Prevent invalid stock.
+
             _context.Items.Add(item);
 
             await _context.SaveChangesAsync();
@@ -54,14 +57,17 @@ namespace SAE_API.Controllers
 
         // PUT api/<ItemsController>/5
         [HttpPut]
-        public async Task<Item> Put([FromBody] Item item)
+        public async Task<ActionResult<Item>> Put([FromBody] Item item)
         {
+            if (item.Quantity < 0)
+                return BadRequest("Quantity no puede ser negativa."); // Block negative stock writes.
+
             item.UpdateddDate = DateTime.Now;
             _context.Items.Update(item);
 
             await _context.SaveChangesAsync();
 
-            return item;
+            return Ok(item);
         }
 
         // DELETE api/<ItemsController>/5
@@ -71,6 +77,10 @@ namespace SAE_API.Controllers
             Item item =_context.Items.Where(m => m.Id == id).FirstOrDefault();
             if (item != null)
             {
+                bool hasActiveUsage = await _context.ItemDeliveryNotes.AnyAsync(x => x.ItemId == id && x.Active);
+                if (hasActiveUsage)
+                    return BadRequest("El item tiene notas activas y no puede eliminarse."); // Preserve inventory history.
+
                 _context.Items.Remove(item);
 
                 await _context.SaveChangesAsync();
